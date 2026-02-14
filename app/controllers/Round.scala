@@ -140,7 +140,7 @@ final class Round(
   ): Fu[Result] =
     playablePovForReq(pov.game) match
       case Some(player) if userTv.isEmpty => renderPlayer(pov.withColor(player.color))
-      case _ if pov.game.variant == chess.variant.RacingKings && pov.color.black =>
+      case _ if pov.game.variant == chess.variant.RacingKings && pov.color.black && !pov.game.replayable =>
         if userTv.isDefined then watch(!pov, userTv)
         else Redirect(routes.Round.watcher(pov.gameId, Color.white))
       case _ =>

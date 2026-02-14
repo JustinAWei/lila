@@ -4,7 +4,7 @@ import { detectThreefold } from '../nodeFinder';
 import { tablebaseGuaranteed } from '../explorer/explorerCtrl';
 import type AnalyseCtrl from '../ctrl';
 import { defined, prop, type Prop, requestIdleCallback } from 'lib';
-import { parseUci } from 'chessops/util';
+import { opposite, parseUci } from 'chessops/util';
 import { makeSan } from 'chessops/san';
 import { storedBooleanPropWithEffect } from 'lib/storage';
 import { renderCustomPearl, renderCustomStatus } from './practiceView';
@@ -53,6 +53,7 @@ export interface PracticeCtrl {
 export function make(root: AnalyseCtrl, customPlayableDepth?: () => number): PracticeCtrl {
   const playableDepth = customPlayableDepth ?? (() => 18);
   const masteryMode = storedBooleanPropWithEffect('analyse.practice-hard-mode', false, root.redraw);
+  const playerColor = (): Color => (root.flipped ? opposite(root.data.orientation) : root.data.orientation);
   const variant = root.data.game.variant.key,
     running = prop(true),
     comment = prop<Comment | null>(null),
@@ -110,7 +111,7 @@ export function make(root: AnalyseCtrl, customPlayableDepth?: () => number): Pra
           ? { cp: 0 }
           : (node.ceval as EvalScore));
       const prevEval: EvalScore = tbhitToEval(prev.tbhit) || prev.ceval!;
-      const shift = -winningChances.povDiff(root.bottomColor(), nodeEval, prevEval);
+      const shift = -winningChances.povDiff(playerColor(), nodeEval, prevEval);
 
       best = nodeBestUci(prev);
       if (
@@ -144,7 +145,7 @@ export function make(root: AnalyseCtrl, customPlayableDepth?: () => number): Pra
   }
 
   function isMyTurn(): boolean {
-    return root.turnColor() === root.bottomColor();
+    return root.turnColor() === playerColor();
   }
 
   function checkCeval() {
@@ -263,7 +264,7 @@ export function make(root: AnalyseCtrl, customPlayableDepth?: () => number): Pra
       root.setAutoShapes();
     },
     currentNode: () => root.node,
-    bottomColor: root.bottomColor,
+    bottomColor: playerColor,
     redraw: root.redraw,
     customCeval: {
       search: () =>
