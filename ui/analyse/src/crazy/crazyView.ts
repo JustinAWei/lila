@@ -1,4 +1,4 @@
-import { drag } from './crazyCtrl';
+import { drag, getSelectedPiece } from './crazyCtrl';
 import { h } from 'snabbdom';
 import type { MouchEvent } from '@lichess-org/chessground/types';
 import { onInsert } from 'lib/view';
@@ -38,6 +38,9 @@ export default function (ctrl: AnalyseCtrl, color: Color, position: Position) {
         h(
           'div.pocket-c2',
           h('piece.' + role + '.' + color, {
+            class: {
+              selected: usable && getSelectedPiece()?.role === role && getSelectedPiece()?.color === color,
+            },
             attrs: { 'data-role': role, 'data-color': color, 'data-nb': nb },
           }),
         ),

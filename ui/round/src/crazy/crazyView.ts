@@ -4,7 +4,7 @@ import { h } from 'snabbdom';
 import type RoundController from '../ctrl';
 import type { TopOrBottom } from 'lib/game';
 import { plyStep } from '../util';
-import { crazyKeys, drag, pieceRoles } from './crazyCtrl';
+import { crazyKeys, drag, getSelectedPiece, pieceRoles } from './crazyCtrl';
 
 const eventNames = ['mousedown', 'touchstart'];
 
@@ -42,7 +42,11 @@ export default function pocket(ctrl: RoundController, color: Color, position: To
         h(
           'div.pocket-c2',
           h('piece.' + role + '.' + color, {
-            class: { premove: activeColor && preDropRole === role },
+            class: {
+              premove: activeColor && preDropRole === role,
+              selected:
+                activeColor && getSelectedPiece()?.role === role && getSelectedPiece()?.color === color,
+            },
             attrs: { 'data-role': role, 'data-color': color, 'data-nb': nb },
           }),
         ),

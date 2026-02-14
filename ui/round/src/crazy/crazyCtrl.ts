@@ -1,6 +1,7 @@
 import { isPlayerTurn } from 'lib/game';
 import { dragNewPiece } from '@lichess-org/chessground/drag';
 import { setDropMode, cancelDropMode } from '@lichess-org/chessground/drop';
+import { dropNewPiece } from '@lichess-org/chessground/board';
 import type RoundController from '../ctrl';
 import type { MouchEvent } from '@lichess-org/chessground/types';
 import type { RoundData } from '../interfaces';
@@ -8,6 +9,23 @@ import { storage } from 'lib/storage';
 import { pubsub } from 'lib/pubsub';
 
 export const pieceRoles: Exclude<Role, 'king'>[] = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
+
+let selectedPiece: Piece | undefined;
+export const getSelectedPiece = (): Piece | undefined => selectedPiece;
+
+export function clearSelectedPiece(): void {
+  selectedPiece = undefined;
+}
+
+function dropPocketPiece(ctrl: RoundController, key: Key): void {
+  if (!selectedPiece) return;
+  const s = ctrl.chessground.state;
+  s.pieces.set('a0', selectedPiece);
+  dropNewPiece(s, 'a0', key);
+  clearSelectedPiece();
+  ctrl.redraw();
+  s.dom.redraw();
+}
 
 export function drag(ctrl: RoundController, e: MouchEvent): void {
   if (e.button !== undefined && e.button !== 0) return; // only touch or left click
@@ -19,6 +37,10 @@ export function drag(ctrl: RoundController, e: MouchEvent): void {
   if (!role || !color || number === '0') return;
   e.stopPropagation();
   e.preventDefault();
+  selectedPiece = { color, role };
+  ctrl.chessground.selectSquare(null);
+  ctrl.chessground.state.events.select = key => dropPocketPiece(ctrl, key);
+  ctrl.redraw();
   dragNewPiece(ctrl.chessground.state, { color, role }, e);
 }
 

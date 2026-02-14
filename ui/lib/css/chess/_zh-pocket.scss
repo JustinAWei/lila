@@ -67,6 +67,10 @@
       &:first-child:hover {
         @extend %box-radius-left;
       }
+
+      &.selected {
+        background-color: rgba(20, 85, 30, 0.5);
+      }
     }
   }
 

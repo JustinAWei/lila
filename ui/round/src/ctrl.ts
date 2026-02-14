@@ -18,7 +18,12 @@ import TransientMove from './transientMove';
 import * as atomic from './atomic';
 import * as util from './util';
 import * as xhr from './xhr';
-import { valid as crazyValid, init as crazyInit, onEnd as crazyEndHook } from './crazy/crazyCtrl';
+import {
+  valid as crazyValid,
+  init as crazyInit,
+  onEnd as crazyEndHook,
+  clearSelectedPiece,
+} from './crazy/crazyCtrl';
 import type { MoveRootCtrl } from 'lib/game/moveRootCtrl';
 import { ctrl as makeKeyboardMove, type KeyboardMove } from 'keyboardMove';
 import { makeVoiceMove, type VoiceMove } from 'voice';
@@ -170,6 +175,7 @@ export default class RoundController implements MoveRootCtrl {
     if (!this.replaying() && crazyValid(this.data, role, key)) {
       this.sendNewPiece(role, key, !!meta.predrop);
     } else this.jump(this.ply);
+    clearSelectedPiece();
   };
 
   private onMove = (orig: Key, dest: Key, captured?: Piece) => {
@@ -204,6 +210,7 @@ export default class RoundController implements MoveRootCtrl {
 
   private onPredrop = (role: Role | undefined, _?: Key) => {
     this.preDrop = role;
+    if (role) clearSelectedPiece();
     this.redraw();
   };
 
@@ -233,6 +240,7 @@ export default class RoundController implements MoveRootCtrl {
   userJump = (ply: Ply): void => {
     this.toSubmit = undefined;
     this.chessground.selectSquare(null);
+    clearSelectedPiece();
     if (ply !== this.ply && this.jump(ply)) site.sound.saySan(this.stepAt(this.ply).san, true);
     else this.redraw();
   };

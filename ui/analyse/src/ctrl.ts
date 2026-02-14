@@ -44,7 +44,7 @@ import { makeFen } from 'chessops/fen';
 import { normalizeMove } from 'chessops/variant';
 import { storedBooleanProp, storedBooleanPropWithEffect } from 'lib/storage';
 import type { AnaMove } from './study/interfaces';
-import { valid as crazyValid } from './crazy/crazyCtrl';
+import { valid as crazyValid, clearSelectedPiece } from './crazy/crazyCtrl';
 import { PromotionCtrl } from 'lib/game/promotion';
 import wikiTheory, { wikiClear, type WikiTheory } from './wiki';
 import ExplorerCtrl from './explorer/explorerCtrl';
@@ -452,6 +452,7 @@ export default class AnalyseCtrl implements CevalHandler {
 
   userJump = (path: TreePath): void => {
     this.autoplay.stop();
+    clearSelectedPiece();
     if (!this.gamebookPlay()) this.withCg(cg => cg.selectSquare(null));
     if (this.practice) {
       const prev = this.path;
@@ -567,6 +568,7 @@ export default class AnalyseCtrl implements CevalHandler {
         to: parseSquare(pos)!,
       });
     } else this.jump(this.path);
+    clearSelectedPiece();
   };
 
   userMove = (orig: Key, dest: Key, capture?: JustCaptured): void => {
