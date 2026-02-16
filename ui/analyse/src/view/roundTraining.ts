@@ -48,16 +48,17 @@ function playerTable(ctrl: AnalyseCtrl, color: Color): VNode {
       h('strong', sideData.acpl),
       h('span', ` ${i18n.site.averageCentipawnLoss}`),
     ]),
-    h('div.advice-summary__accuracy', [
-      h('strong', [sideData.accuracy, '%']),
-      h('span', [
-        i18n.site.accuracy,
-        ' ',
-        h('a', {
-          attrs: { 'data-icon': licon.InfoCircle, href: '/page/accuracy', target: '_blank' },
-        }),
+    !d.analysis!.partial &&
+      h('div.advice-summary__accuracy', [
+        h('strong', [sideData.accuracy, '%']),
+        h('span', [
+          i18n.site.accuracy,
+          ' ',
+          h('a', {
+            attrs: { 'data-icon': licon.InfoCircle, href: '/page/accuracy', target: '_blank' },
+          }),
+        ]),
       ]),
-    ]),
   ]);
 }
 
