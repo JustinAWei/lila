@@ -54,6 +54,7 @@ body {
 
 main {
   grid-area: main;
+  min-width: 0;
 
   &.page-small {
     max-width: 1000px;
